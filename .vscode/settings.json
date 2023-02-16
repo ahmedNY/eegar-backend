@@ -1,0 +1,26 @@
+{
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#d7b08e",
+    "activityBar.background": "#d7b08e",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#328d5d",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#d7b08e",
+    "statusBar.background": "#ca9668",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#bd7c42",
+    "statusBarItem.remoteBackground": "#ca9668",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#ca9668",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#ca966899",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#ca9668",
+  "cSpell.words": [
+    "otplib",
+    "socketio"
+  ]
+}
