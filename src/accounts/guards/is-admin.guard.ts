@@ -1,6 +1,4 @@
-import { SubscriptionsService } from '@/gebril_videos/services/subscriptions.service';
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { UsersService } from '../services/users.service';
 
 @Injectable()

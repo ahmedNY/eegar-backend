@@ -38,7 +38,7 @@ async function bootstrap() {
   
   initCustomSocketAdapter(app);
   await app.startAllMicroservices();
-  await app.listen(5000);
+  await app.listen(5050);
   console.log(`Server is running on: ${await app.getUrl()}`);
 }
 
@@ -57,7 +57,7 @@ function setupSwagger(
     .setTitle(title)
     .setDescription(desc)
     .setVersion('2.0')
-    .addServer(`http://localhost:5000/${gatewayPath}`)
+    .addServer(`http://localhost:5050/${gatewayPath}`)
     .addBearerAuth()
     .build();
 

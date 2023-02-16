@@ -9,7 +9,7 @@ import { GatewayModule } from './gateway/gateway.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SharedModule } from './shared/shared.module';
 import { SocketGatewayModule } from './socket-gateway/socket-gateway.module';
-import { GebrilVideosModule } from './gebril_videos/gebril_videos.module';
+import { EegarModule } from './eegar/eegar.module';
 
 export async function getTypeOrmModule() {
   await NestConfigModule.envVariablesLoaded;
@@ -53,7 +53,7 @@ export async function getTypeOrmModule() {
     NotificationsModule,
     SharedModule,
     SocketGatewayModule,
-    GebrilVideosModule,
+    EegarModule,
   ],
   controllers: [],
   providers: [],

@@ -1,6 +1,5 @@
-import { Video } from "@/gebril_videos/entities/video.entity";
 import { ApiPropertyInt } from "@/shared/decorators/api-property-int.decorator";;
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -39,7 +38,4 @@ export class User {
     @UpdateDateColumn()
     updatedAt?: Date;
 
-    @ManyToMany(() => Video, video => video.usersLiked)
-    @JoinTable()
-    likedVideos: Video[]
 }

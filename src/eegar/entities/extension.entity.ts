@@ -1,17 +1,17 @@
 import { User } from '@/accounts/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, ManyToOne } from 'typeorm';
-import { Asset } from './asset.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Rent } from './rent.entity';
 
 @Entity()
-export class Category {
+export class Extension {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    categoryName: string;
+    rentId: number;
 
-    @OneToMany(() => Asset, video => video.category)
-    videos: Asset[];
+    @ManyToOne(() => Rent)
+    rent: Rent;
 
     @CreateDateColumn()
     createdAt: Date;

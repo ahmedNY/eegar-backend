@@ -1,22 +1,30 @@
+import { Customer } from '@/accounts/entities/customer.entity';
 import { User } from '@/accounts/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Asset } from './asset.entity';
 
 @Entity()
-export class Plan {
+export class Rent {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    planName: string;
+    assetId: number;
 
-    @Column('text')
-    description: string;
-
-    @Column('double')
-    price: number;
+    @ManyToOne(() => Asset)
+    asset: Asset;
 
     @Column()
-    duration: number;
+    customerId: number;
+
+    @ManyToOne(() => Customer)
+    customer: Customer;
+
+    @Column()
+    dateFrom: Date;
+
+    @Column()
+    numberOfNights: number;
 
     @CreateDateColumn()
     createdAt: Date;

@@ -23,13 +23,12 @@ export class AssetsService {
   }
 
   findAll(): Promise<Asset[]> {
-    return this.repo.find({ relations: { category: true } });
+    return this.repo.find();
   }
 
   findAllPaginated(dto: PaginatedDataQueryDto): Promise<PaginatedResultDto<Asset>> {
     return this.paginatedDataService.findAll(Asset, dto, {
       relations: {
-        category: true,
         createdBy: true,
         updatedBy: true,
       }
@@ -47,7 +46,7 @@ export class AssetsService {
   }
 
   findOne(id: number): Promise<Asset> {
-    return this.repo.findOne({ where: { id }, relations: { category: true } });
+    return this.repo.findOne({ where: { id } });
   }
 
   async update(id: number, dto: UpdateAssetDto, userId: number): Promise<Asset> {
@@ -89,18 +88,5 @@ export class AssetsService {
       .select('DISTINCT v.categoryId as categoryId')
       .getRawMany();
     return result.map(row => row.categoryId);
-  }
-
-  async userLikedAsset(userId: number, assetId: number): Promise<boolean> {
-    const asset = await this.repo.findOne({
-      where: { id: assetId },
-      relations: { usersLiked: true },
-    });
-    if (asset == null) {
-      throw new NotFoundException('Asset not found');
-    }
-    asset.usersLiked = [...asset.usersLiked || [], { id: userId } as any];
-    await this.repo.save(asset);
-    return true;
   }
 }
