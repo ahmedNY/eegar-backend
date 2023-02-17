@@ -16,7 +16,14 @@ export class RentsService {
   }
 
   findAll(): Promise<Rent[]> {
-    return this.repo.find();
+    return this.repo.find({
+      relations: {
+        customer: true,
+        asset: true,
+        createdBy: true,
+        updatedBy: true,
+      }
+    });
   }
 
   findOne(id: number): Promise<Rent> {

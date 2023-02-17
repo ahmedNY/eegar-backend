@@ -7,6 +7,7 @@ import { Rent } from './entities/rent.entity';
 import { Extension } from './entities/extension.entity';
 import { ExtensionsService } from './services/extensions.service';
 import { RentsService } from './services/rents.service';
+import { PaymentsModule } from './payments.module';
 
 const exportedServices = [
   AssetsService,
@@ -22,6 +23,7 @@ const exportedServices = [
       Extension,
       Rent,
     ]),
+    PaymentsModule,
   ],
   providers: [...exportedServices],
   exports: [...exportedServices]

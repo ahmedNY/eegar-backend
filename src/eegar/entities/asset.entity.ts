@@ -21,6 +21,9 @@ export class Asset {
     @Column({ nullable: true })
     photo?: string;
 
+    @Column('double')
+    price?: number;
+
     @CreateDateColumn()
     createdAt: Date;
 

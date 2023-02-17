@@ -6,6 +6,8 @@ import { ConfigModule } from '@/config/config.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { ConfigController } from '../admin-gateway/controllers/config.controller';
 import { EegarModule } from '@/eegar/eegar.module';
+import { AssetsController } from '../admin-gateway/controllers/assets.controller';
+import { RentsController } from '../admin-gateway/controllers/rents.controller';
 
 
 @Module({
@@ -16,8 +18,10 @@ import { EegarModule } from '@/eegar/eegar.module';
         NotificationsModule,
     ],
     controllers: [
+        AssetsController,
         AuthController,
         ConfigController,
+        RentsController,
         UserMeController,
     ],
 })

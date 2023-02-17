@@ -30,6 +30,12 @@ export class AuthService {
     ) { }
 
     async sendOTP(dto: UserSendOtpDto) {
+        const user = await this.usersService.findOneByPhoneNumber(dto.phoneNumber);
+        
+        if (!user) {
+            throw new ForbiddenException('User not registered!, contact app admin');
+        }
+        
         // search for existing otp on database
         const otp = await this.otpService.findOne({
             phoneNumber: dto.phoneNumber,
@@ -74,87 +80,8 @@ export class AuthService {
         if (!isValid) {
             throw new ForbiddenException('Invalid OTP token');
         }
-
-        let user = await this.usersService.findOneByPhoneNumber(phoneNumber);
-
-        if (!user) {
-            user = await this.usersService.create({
-                phoneNumber: dto.phoneNumber,
-                isActive: true,
-            });
-        }
-
-        // delete otp
-        await this.otpService.removeByPhoneNumber(phoneNumber);
-        const token = this.generateUserAuthToken(user);
-
-        return {
-            user: user,
-            token: token,
-        }
-    }
-
-    async adminSendOTP(dto: UserSendOtpDto) {
-        const user = await this.usersService.findOneByPhoneNumber(dto.phoneNumber);
-        
-        if (!user) {
-            throw new ForbiddenException('User not registered!, contact app admin');
-        }
-        
-        if (user.isAdmin == false) {
-            throw new ForbiddenException('You don"t haver permission!, contact app admin');
-        }
-        
-        // search for existing otp on database
-        const otp = await this.otpService.findOne({
-            phoneNumber: dto.phoneNumber,
-        })
-
-        if (otp) {
-            return this.resend(dto);
-        }
-
-        //generate otp token
-        let token: string = this.generateOTPToken();
-
-        // it customer is tester we change token value to default testers otp
-        if (this.configService.get('NODE_ENV') == 'development') {
-            token = '0000';
-        }
-
-        // create OTP
-        await this.otpService.create({
-            otpToken: token,
-            phoneNumber: dto.phoneNumber,
-        });
-
-        return true;
-    }
-
-    async adminVerifyOtp(dto: VerifyOtpDto): Promise<UserLoginResponseDto> {
-        const { phoneNumber, otpToken } = dto;
-
-        if (dto.otpToken != '0000') {
-            const isValidOtp = authenticator.verify({
-                token: dto.otpToken,
-                secret: this.configService.get('OTP_SECRET'),
-            })
-            if (isValidOtp!) {
-                throw new ForbiddenException('Invalid OTP');
-            }
-        }
-
-        const isValid = await this.otpService.findOne({ phoneNumber, otpToken })
-
-        if (!isValid) {
-            throw new ForbiddenException('Invalid OTP token');
-        }
         
         const user = await this.usersService.findOneByPhoneNumber(phoneNumber);
-        
-        if (user.isAdmin == false) {
-            throw new ForbiddenException('Forbidden resources');
-        }
 
         if (!user) {
             throw new NotFoundException('User not found!');

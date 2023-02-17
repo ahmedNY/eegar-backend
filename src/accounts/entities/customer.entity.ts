@@ -13,27 +13,27 @@ export class Customer {
     @Column()
     phone: string;
 
-    @Column()
+    @Column({ nullable: true })
     identityType: string;
 
-    @Column()
+    @Column({ nullable: true })
     identityNumber: string;
 
-    @Column()
+    @Column({ nullable: true })
     identityDocument: string;
 
     @OneToMany(() => Rent, (rent) => rent.customer)
     rents: Rent[];
 
-    @Column()
-    withCustomerId: number;
+    @Column({ nullable: true })
+    withCustomerId?: number;
 
-    @ManyToOne(() => Customer)
-    withCustomer: Customer;
+    @ManyToOne(() => Customer, { nullable: true })
+    withCustomer?: Customer;
 
-    @OneToMany(() => Customer, customer => customer.withCustomer)
+    @OneToMany(() => Customer, customer => customer.withCustomer, { nullable: true })
     @JoinTable()
-    companions: Customer[];
+    companions?: Customer[];
 
     @CreateDateColumn()
     createdAt: Date;

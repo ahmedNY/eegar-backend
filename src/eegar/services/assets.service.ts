@@ -59,7 +59,7 @@ export class AssetsService {
   }
 
   async upload(assetId: number, fileType: string, file: Express.Multer.File) {
-    const allowedFileTypes = ['thumbnail', 'posterPortrait', 'posterLandscape'];
+    const allowedFileTypes = ['photo'];
     if (allowedFileTypes.includes(fileType) == false) {
       throw new BadRequestException(`invalid type "${fileType}" allowed fileType is [${allowedFileTypes.join(', ')}]`)
     }

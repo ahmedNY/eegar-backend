@@ -11,11 +11,11 @@ export class AuthController {
 
   @Post('send-otp')
   async sendOtp(@Body() dto: UserSendOtpDto) {
-      return this.service.adminSendOTP(dto)
+      return this.service.sendOTP(dto)
   }
 
   @Post('verify-otp')
   async verifyOtp(@Body() dto: VerifyOtpDto) {
-      return this.service.adminVerifyOtp(dto)
+      return this.service.verifyOtp(dto)
   }
 }
