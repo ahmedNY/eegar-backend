@@ -1,3 +1,4 @@
+import { CurrentUser } from '@/accounts/decorators/current-user.decorator';
 import { JwtAuthGuard } from '@/accounts/guards/jwt-auth.guard';
 import { CreateRentDto } from '@/eegar/dto/create-rent.dto';
 import { UpdateRentDto } from '@/eegar/dto/update-rent.dto';
@@ -13,8 +14,8 @@ export class RentsController {
   constructor(private readonly service: RentsService) {}
 
   @Post()
-  create(@Body() dto: CreateRentDto) {
-    return this.service.create(dto);
+  create(@Body() dto: CreateRentDto, @CurrentUser('id') userId: number) {
+    return this.service.create(dto, userId);
   }
 
   @Get()
@@ -28,8 +29,8 @@ export class RentsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateRentDto) {
-    return this.service.update(+id, dto);
+  update(@Param('id') id: string, @Body() dto: UpdateRentDto, @CurrentUser('id') userId: number) {
+    return this.service.update(+id, dto, userId);
   }
 
   @Delete(':id')

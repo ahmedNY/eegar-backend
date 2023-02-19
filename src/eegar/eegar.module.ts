@@ -7,11 +7,13 @@ import { Rent } from './entities/rent.entity';
 import { Extension } from './entities/extension.entity';
 import { ExtensionsService } from './services/extensions.service';
 import { RentsService } from './services/rents.service';
-import { PaymentsModule } from './payments.module';
+import { PaymentsService } from './services/payments.service';
+import { Payment } from './entities/payment.entity';
 
 const exportedServices = [
   AssetsService,
   ExtensionsService,
+  PaymentsService,
   RentsService,
 ];
 
@@ -21,9 +23,9 @@ const exportedServices = [
     TypeOrmModule.forFeature([
       Asset,
       Extension,
+      Payment,
       Rent,
     ]),
-    PaymentsModule,
   ],
   providers: [...exportedServices],
   exports: [...exportedServices]

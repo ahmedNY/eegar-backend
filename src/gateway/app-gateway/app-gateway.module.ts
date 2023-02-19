@@ -8,6 +8,7 @@ import { ConfigController } from '../admin-gateway/controllers/config.controller
 import { EegarModule } from '@/eegar/eegar.module';
 import { AssetsController } from '../admin-gateway/controllers/assets.controller';
 import { RentsController } from '../admin-gateway/controllers/rents.controller';
+import { PaymentsController } from '../admin-gateway/controllers/payments.controller';
 
 
 @Module({
@@ -21,6 +22,7 @@ import { RentsController } from '../admin-gateway/controllers/rents.controller';
         AssetsController,
         AuthController,
         ConfigController,
+        PaymentsController,
         RentsController,
         UserMeController,
     ],

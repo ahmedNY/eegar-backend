@@ -13,6 +13,9 @@ export class Extension {
     @ManyToOne(() => Rent)
     rent: Rent;
 
+    @Column()
+    numberOfNights: number;
+
     @CreateDateColumn()
     createdAt: Date;
 
