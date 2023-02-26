@@ -20,6 +20,12 @@ export class Customer {
     identityNumber: string;
 
     @Column({ nullable: true })
+    identityIssuePlace: string;
+
+    @Column({ nullable: true })
+    identityIssueDate: string;
+
+    @Column({ nullable: true })
     identityDocument: string;
 
     @OneToMany(() => Rent, (rent) => rent.customer)
