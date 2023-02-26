@@ -20,7 +20,10 @@ export class CustomersService {
   }
 
   findOne(id: number): Promise<Customer> {
-    return this.repo.findOne({ where: { id } });
+    return this.repo.findOne({ where: { id }, relations: {
+      withCustomer: true,
+      companions: true,
+    } });
   }
 
   async update(id: number, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
