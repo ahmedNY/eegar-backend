@@ -3,9 +3,8 @@ import { JwtAuthGuard } from '@/accounts/guards/jwt-auth.guard';
 import { CreateRentDto } from '@/eegar/dto/create-rent.dto';
 import { UpdateRentDto } from '@/eegar/dto/update-rent.dto';
 import { RentsService } from '@/eegar/services/rents.service';
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { Response } from 'express';
 
 @Controller('rents')
 @ApiTags('rents')
@@ -27,14 +26,6 @@ export class RentsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.service.findOne(+id);
-  }
-
-  @Get('print/:id')
-  async print(@Param('id') id: string, @Res() res: Response) {
-    const output = await this.service.print(+id);
-    res.type("application/pdf");
-    res.attachment('contract.pdf')
-    res.send(output);
   }
 
   @Patch(':id')

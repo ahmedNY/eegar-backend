@@ -6,7 +6,6 @@ import { DeleteResult, Repository } from 'typeorm';
 import { CreateRentDto } from '../dto/create-rent.dto';
 import { UpdateRentDto } from '../dto/update-rent.dto';
 import { Rent } from '../entities/rent.entity';
-const { fields, fill } = require('pdf-form-fill')
 
 import { writeFile } from 'fs/promises';
 
@@ -55,16 +54,5 @@ export class RentsService {
 
   remove(id: number): Promise<DeleteResult> {
     return this.repo.delete({ id });
-  }
-
-  async print(id: number) {
-    const rent = await this.findOne(id);
-    const srcPdf = join(global.__basedir, '../..', 'uploads', 'contract_template.pdf');
-    const tgtPdf = join(global.__basedir, '../..', 'uploads', `contract_${rent.id}.pdf`);
-    const formFields = { "customerName": "الحمد لله" };
-    console.log(formFields);
-    const buffer = await fill(srcPdf, formFields);
-    await writeFile(tgtPdf, buffer);
-
   }
 }
