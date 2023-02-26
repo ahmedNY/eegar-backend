@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { reject } from 'lodash';
+import { join } from 'path';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateRentDto } from '../dto/create-rent.dto';
 import { UpdateRentDto } from '../dto/update-rent.dto';
 import { Rent } from '../entities/rent.entity';
+const { fields, fill } = require('pdf-form-fill')
+
+import { writeFile } from 'fs/promises';
+
 
 @Injectable()
 export class RentsService {
@@ -12,15 +18,15 @@ export class RentsService {
   ) { }
 
   create(dto: CreateRentDto, userId: number): Promise<Rent> {
-    return this.repo.save(this.repo.create({...dto, createdById: userId}));
+    return this.repo.save(this.repo.create({ ...dto, createdById: userId }));
   }
 
   findAll(): Promise<Rent[]> {
     return this.repo.find({
       relations: {
-        customer: {companions: true},
+        customer: { companions: true },
         payments: true,
-        extensions: true,
+        extensions: { payment: true },
         asset: true,
         createdBy: true,
         updatedBy: true,
@@ -29,7 +35,17 @@ export class RentsService {
   }
 
   findOne(id: number): Promise<Rent> {
-    return this.repo.findOne({ where: { id } });
+    return this.repo.findOne({
+      where: { id },
+      relations: {
+        customer: { companions: true },
+        payments: true,
+        extensions: { payment: true },
+        asset: true,
+        createdBy: true,
+        updatedBy: true,
+      },
+    });
   }
 
   async update(id: number, dto: UpdateRentDto, userId: number): Promise<Rent> {
@@ -39,5 +55,16 @@ export class RentsService {
 
   remove(id: number): Promise<DeleteResult> {
     return this.repo.delete({ id });
+  }
+
+  async print(id: number) {
+    const rent = await this.findOne(id);
+    const srcPdf = join(global.__basedir, '../..', 'uploads', 'contract_template.pdf');
+    const tgtPdf = join(global.__basedir, '../..', 'uploads', `contract_${rent.id}.pdf`);
+    const formFields = { "customerName": "الحمد لله" };
+    console.log(formFields);
+    const buffer = await fill(srcPdf, formFields);
+    await writeFile(tgtPdf, buffer);
+
   }
 }

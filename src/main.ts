@@ -40,6 +40,7 @@ async function bootstrap() {
   await app.startAllMicroservices();
   await app.listen(5050);
   console.log(`Server is running on: ${await app.getUrl()}`);
+  console.log(process.cwd())
 }
 
 bootstrap();

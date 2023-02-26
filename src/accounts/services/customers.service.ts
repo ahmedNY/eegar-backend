@@ -11,8 +11,8 @@ export class CustomersService {
     @InjectRepository(Customer) private repo: Repository<Customer>
   ) { }
 
-  create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    return this.repo.save(this.repo.create(createCustomerDto));
+  create(createCustomerDto: CreateCustomerDto, userId: number): Promise<Customer> {
+    return this.repo.save(this.repo.create({ ...createCustomerDto, createdById: userId }));
   }
 
   findAll(): Promise<Customer[]> {

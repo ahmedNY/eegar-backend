@@ -1,5 +1,6 @@
 import { User } from '@/accounts/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, OneToOne } from 'typeorm';
+import { Payment } from './payment.entity';
 import { Rent } from './rent.entity';
 
 @Entity()
@@ -12,6 +13,9 @@ export class Extension {
 
     @ManyToOne(() => Rent)
     rent: Rent;
+
+    @OneToOne(() => Payment, payment => payment.extension)
+    payment: Payment;
 
     @Column()
     numberOfNights: number;

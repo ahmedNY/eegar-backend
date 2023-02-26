@@ -1,5 +1,5 @@
 import { User } from '@/accounts/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { Extension } from './extension.entity';
 import { Rent } from './rent.entity';
 
@@ -22,7 +22,8 @@ export class Payment {
     @Column({ nullable: true })
     extensionId?: number;
 
-    @ManyToOne(() => Extension, { nullable: true })
+    @OneToOne(() => Extension, extension => extension.payment, { nullable: true })
+    @JoinColumn()
     extension?: Extension;
 
     @Column('double')
@@ -31,7 +32,7 @@ export class Payment {
     @Column()
     note: string;
 
-    @Column({type: 'enum', enum: PaymentType})
+    @Column({ type: 'enum', enum: PaymentType })
     paymentType: PaymentType;
 
     @Column({ nullable: true })

@@ -4,6 +4,7 @@ import { UpdateCustomerDto } from '@/accounts/dto/update-customer.dto';
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/accounts/guards/jwt-auth.guard';
+import { CurrentUser } from '@/accounts/decorators/current-user.decorator';
 
 @Controller('customers')
 @ApiTags('customers')
@@ -13,8 +14,8 @@ export class CustomersController {
   constructor(private readonly service: CustomersService) {}
 
   @Post()
-  create(@Body() dto: CreateCustomerDto) {
-    return this.service.create(dto);
+  create(@Body() dto: CreateCustomerDto, @CurrentUser('id') userId: number) {
+    return this.service.create(dto, userId);
   }
 
   @Get()

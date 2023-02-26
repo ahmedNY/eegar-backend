@@ -9,6 +9,15 @@ export class Asset {
     @Column()
     assetName: string;
 
+    @Column()
+    buildingNumber: string;
+
+    @Column()
+    blockNumber: string;
+
+    @Column()
+    district: string;
+
     @Column({ nullable: true })
     floor?: string;
 
