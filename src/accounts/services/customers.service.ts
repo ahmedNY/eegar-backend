@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { rm, writeFile } from 'fs/promises';
 import { nanoid } from 'nanoid';
-import path from 'path';
+import * as path from 'path';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
