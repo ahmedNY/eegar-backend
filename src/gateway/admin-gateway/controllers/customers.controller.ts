@@ -1,17 +1,18 @@
 import { CustomersService } from '@/accounts/services/customers.service';
 import { CreateCustomerDto } from '@/accounts/dto/create-customer.dto';
 import { UpdateCustomerDto } from '@/accounts/dto/update-customer.dto';
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/accounts/guards/jwt-auth.guard';
 import { CurrentUser } from '@/accounts/decorators/current-user.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('customers')
 @ApiTags('customers')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class CustomersController {
-  constructor(private readonly service: CustomersService) {}
+  constructor(private readonly service: CustomersService) { }
 
   @Post()
   create(@Body() dto: CreateCustomerDto, @CurrentUser('id') userId: number) {
@@ -37,4 +38,32 @@ export class CustomersController {
   remove(@Param('id') id: string) {
     return this.service.remove(+id);
   }
+
+  @Post('/upload/:id/:type')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(
+    @Param('id') id: number,
+    @Param('type') type: string,
+    @UploadedFile(new ParseFilePipe({
+      validators: [
+        new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        new MaxFileSizeValidator({ maxSize: 1024 * 512 }),
+      ],
+    }),) file: Express.Multer.File,
+  ) {
+    return this.service.upload(id, type, file);
+  }
+
 }
