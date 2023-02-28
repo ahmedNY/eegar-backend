@@ -47,13 +47,13 @@ export class CustomersService {
       throw new BadRequestException(`invalid type "${fileType}" allowed fileType is [${allowedFileTypes.join(', ')}]`)
     }
 
-    const asset = await this.repo.findOneBy({ id: assetId });
-    if (asset == null) {
+    const customer = await this.repo.findOneBy({ id: assetId });
+    if (customer == null) {
       throw new NotFoundException(`asset with id of "${assetId}" not found`)
     }
 
-    if (asset[fileType]) {
-      const existingFilePath = path.join(global.__basedir, '..', '..', 'uploads', asset[fileType]);
+    if (customer[fileType]) {
+      const existingFilePath = path.join(global.__basedir, '..', '..', 'uploads', customer[fileType]);
       await rm(existingFilePath);
     }
 
@@ -61,8 +61,8 @@ export class CustomersService {
     const fileName = `${await nanoid(5)}.${fileExt}`;
     const filePath = path.join(global.__basedir, '..', '..', 'uploads', fileName);
     await writeFile(filePath, file.buffer);
-    asset[fileType] = fileName;
-    await this.repo.save(asset);
-    return asset;
+    customer[fileType] = fileName;
+    await this.repo.save(customer);
+    return customer;
   }
 }

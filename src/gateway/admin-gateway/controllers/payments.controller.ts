@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, UploadedFile, UseInterceptors, Query } from '@nestjs/common';
 import { PaymentsService } from '../../../eegar/services/payments.service';
 import { CreatePaymentDto } from '../../../eegar/dto/create-payment.dto';
 import { UpdatePaymentDto } from '../../../eegar/dto/update-payment.dto';
@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '@/accounts/guards/jwt-auth.guard';
 import { ApiTags, ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { CurrentUser } from '@/accounts/decorators/current-user.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { PaginatedDataQueryDto } from '@/shared/dto/paginated-data.dto';
 
 @Controller('payments')
 @ApiTags('payments')
@@ -23,6 +24,12 @@ export class PaymentsController {
   findAll() {
     return this.service.findAll();
   }
+
+  @Get('paginated')
+  findAllPaginated(@Query() dto: PaginatedDataQueryDto) {
+    return this.service.findAllPaginated(dto);
+  }
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {

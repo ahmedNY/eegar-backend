@@ -1,3 +1,6 @@
+import { PaginatedDataQueryDto } from '@/shared/dto/paginated-data.dto';
+import { PaginatedResultDto } from '@/shared/dto/paginated-result.dto';
+import { PaginatedDataService } from '@/shared/services/paginated-data.service';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { rm, writeFile } from 'fs/promises';
@@ -6,12 +9,14 @@ import * as path from 'path';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { UpdatePaymentDto } from '../dto/update-payment.dto';
+import { Asset } from '../entities/asset.entity';
 import { Payment } from '../entities/payment.entity';
 
 @Injectable()
 export class PaymentsService {
   constructor(
-    @InjectRepository(Payment) private repo: Repository<Payment>
+    @InjectRepository(Payment) private repo: Repository<Payment>,
+    private paginatedDataService: PaginatedDataService,
   ) { }
 
   create(dto: CreatePaymentDto, userId: number): Promise<Payment> {
@@ -20,6 +25,15 @@ export class PaymentsService {
 
   findAll(): Promise<Payment[]> {
     return this.repo.find();
+  }
+
+  findAllPaginated(dto: PaginatedDataQueryDto): Promise<PaginatedResultDto<Payment>> {
+    return this.paginatedDataService.findAll(Payment, dto, {
+      relations: {
+        createdBy: true,
+        updatedBy: true,
+      }
+    });
   }
 
   findOne(id: number): Promise<Payment> {
