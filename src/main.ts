@@ -59,6 +59,7 @@ function setupSwagger(
     .setDescription(desc)
     .setVersion('2.0')
     .addServer(`http://localhost:5050/${gatewayPath}`)
+    .addServer(`/${gatewayPath}`)
     .addBearerAuth()
     .build();
 
