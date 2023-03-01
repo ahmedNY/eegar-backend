@@ -41,7 +41,7 @@ export class AssetsService {
     const assets = await this.repo
       .createQueryBuilder('a')
       .select('distinct a.*')
-      .addSelect("(SELECT id FROM rent r1 WHERE a.id = r1.assetId ORDER BY r1.updatedAt DESC LIMIT 1)", 'lastRentId')
+      .addSelect("(SELECT r1.id FROM rent r1 WHERE a.id = r1.assetId ORDER BY r1.updatedAt DESC LIMIT 1)", 'lastRentId')
       .leftJoin('a.rents', 'r2')
       .orderBy('r2.updatedAt', 'DESC')
       .getRawMany();
