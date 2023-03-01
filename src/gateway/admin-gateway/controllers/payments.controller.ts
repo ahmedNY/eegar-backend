@@ -66,7 +66,7 @@ export class PaymentsController {
     @UploadedFile(new ParseFilePipe({
       validators: [
         new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
-        new MaxFileSizeValidator({ maxSize: 1024 * 512 }),
+        new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }),
       ],
     }),) file: Express.Multer.File,
   ) {

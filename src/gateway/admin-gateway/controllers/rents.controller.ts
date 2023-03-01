@@ -23,9 +23,20 @@ export class RentsController {
     return this.service.findAll();
   }
 
+  @Get('reports/monthlyOccupation/:assetId/:year')
+  findMonthlyOccupationReport(@Param('assetId') assetId: number, @Param('year') year: number,) {
+    return this.service.findMonthlyOccupationReport(assetId, year);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.service.findOne(+id);
+  }
+
+
+  @Patch(':id/cancel')
+  cancel(@Param('id') id: string, @CurrentUser('id') userId: number) {
+    return this.service.cancel(+id, userId);
   }
 
   @Patch(':id')

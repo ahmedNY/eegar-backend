@@ -1,5 +1,6 @@
 import { User } from '@/accounts/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Rent } from './rent.entity';
 
 @Entity()
 export class Asset {
@@ -32,6 +33,9 @@ export class Asset {
 
     @Column('double')
     price?: number;
+
+    @OneToMany(() => Rent, rent => rent.asset)
+    rents?: Rent[];
 
     @CreateDateColumn()
     createdAt: Date;

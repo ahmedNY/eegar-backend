@@ -32,6 +32,11 @@ export class AssetsController {
     return this.service.findAllPaginated(dto);
   }
 
+  @Get('home')
+  findAllForHome() {
+    return this.service.findAllForHomePage();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.service.findOne(+id);

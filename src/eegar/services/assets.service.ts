@@ -10,12 +10,14 @@ import { Asset } from '../entities/asset.entity';
 import * as path from 'path';
 import { nanoid } from 'nanoid/async';
 import { writeFile, rm } from "fs/promises";
+import { RentsService } from './rents.service';
 
 @Injectable()
 export class AssetsService {
   constructor(
     @InjectRepository(Asset) private repo: Repository<Asset>,
     private paginatedDataService: PaginatedDataService,
+    private rentsService: RentsService,
   ) { }
 
   create(userId: number, dto: CreateAssetDto): Promise<Asset> {
@@ -35,18 +37,33 @@ export class AssetsService {
     });
   }
 
-  async findAllPaginatedForApp(dto: PaginatedDataQueryDto, userId: number) {
-    const qb = this.paginatedDataService.queryBuilder(Asset,'v', dto);
-    const docs = await qb
-      .leftJoinAndSelect('v.category', 'c')
-      .leftJoinAndSelect('v.usersLiked', 'liked', 'userId = :userId', { userId })
-      .addSelect('100 as v_viewCount')
-      .getMany();
-    return { docs };
+  async findAllForHomePage(): Promise<Asset[]> {
+    const assets = await this.repo
+      .createQueryBuilder('a')
+      .select('distinct a.*')
+      .addSelect("(SELECT id FROM rent r1 WHERE a.id = r1.assetId ORDER BY r1.updatedAt DESC LIMIT 1)", 'lastRentId')
+      .leftJoin('a.rents', 'r2')
+      .orderBy('r2.updatedAt', 'DESC')
+      .getRawMany();
+
+
+    const rents = await this.rentsService.findByIds(assets.map(e => e.lastRentId));
+
+    for (const asset of assets) {
+      asset.lastRent = rents.find(r => r.assetId == asset.id);
+    }
+    return assets;
   }
 
   findOne(id: number): Promise<Asset> {
-    return this.repo.findOne({ where: { id } });
+    return this.repo.findOne({
+      where: { id },
+      relations: {
+        rents: {
+          customer: true,
+        },
+      },
+    });
   }
 
   async update(id: number, dto: UpdateAssetDto, userId: number): Promise<Asset> {

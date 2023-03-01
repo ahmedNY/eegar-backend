@@ -7,6 +7,7 @@ import { Payment } from './payment.entity';
 
 export enum RentState {
     draft = 'draft',
+    canceled = 'canceled',
     checkedIn = 'checkedIn',
     checkedOut = 'checkedOut',
 }
