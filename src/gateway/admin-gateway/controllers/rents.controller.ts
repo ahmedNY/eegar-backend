@@ -2,6 +2,7 @@ import { CurrentUser } from '@/accounts/decorators/current-user.decorator';
 import { JwtAuthGuard } from '@/accounts/guards/jwt-auth.guard';
 import { CreateRentDto } from '@/eegar/dto/create-rent.dto';
 import { UpdateRentDto } from '@/eegar/dto/update-rent.dto';
+import { RentState } from '@/eegar/entities/rent-state';
 import { RentsService } from '@/eegar/services/rents.service';
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
@@ -34,9 +35,13 @@ export class RentsController {
   }
 
 
-  @Patch(':id/cancel')
-  cancel(@Param('id') id: string, @CurrentUser('id') userId: number) {
-    return this.service.cancel(+id, userId);
+  @Patch(':id/changeState/:state')
+  cancel(
+    @Param('id') id: string,
+    @Param('state') state: RentState,
+    @CurrentUser('id') userId: number
+  ) {
+    return this.service.changeState(state, +id, userId);
   }
 
   @Patch(':id')

@@ -1,25 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, EntityManager, In, Repository } from 'typeorm';
 import { CreateRentDto } from '../dto/create-rent.dto';
 import { UpdateRentDto } from '../dto/update-rent.dto';
-import { Rent, RentState } from '../entities/rent.entity';
+import { canChangeState, RentState } from '../entities/rent-state';
+import { Rent } from '../entities/rent.entity';
+import { RentStateTransService } from './rents-state-trans.service';
 
 @Injectable()
 export class RentsService {
   constructor(
     @InjectRepository(Rent) private repo: Repository<Rent>,
     @InjectEntityManager() private entityManager: EntityManager,
+    private rentStateTransService: RentStateTransService,
   ) { }
 
-  create(dto: CreateRentDto, userId: number): Promise<Rent> {
-    return this.repo.save(this.repo.create({ ...dto, createdById: userId }));
+  async create(dto: CreateRentDto, userId: number): Promise<Rent> {
+    const rent = await this.repo.save(this.repo.create({ ...dto, createdById: userId }));
+    await this.rentStateTransService.create({
+      createdById: userId,
+      rentId: rent.id,
+      state: rent.rentState,
+    });
+    return rent;
   }
 
   findAll(): Promise<Rent[]> {
     return this.repo.find({
       relations: {
         customer: { companions: true },
+        broker: true,
         payments: true,
         extensions: { payment: true },
         asset: true,
@@ -40,6 +50,7 @@ export class RentsService {
       where: { id },
       relations: {
         customer: { companions: true },
+        broker: true,
         payments: true,
         extensions: { payment: true },
         asset: true,
@@ -58,7 +69,7 @@ export class RentsService {
       .leftJoin('rent', 'r', 'r.assetId = :assetId AND td.db_date BETWEEN r.dateFrom AND DATE_ADD(r.dateFrom, INTERVAL (r.numberOfNights + (SELECT IF(SUM(e.numberOfNights) IS NULL,0 , SUM(e.numberOfNights)) FROM extension e WHERE e.rentId = r.id)) DAY)', { assetId })
       .where('td.`year` = :year', { year })
       .groupBy('td.month');
-      
+
     if (new Date().getFullYear() == year) {
       qb.where('td.`year` = :year AND td.month <= MONTH(NOW())', { year })
     }
@@ -66,9 +77,18 @@ export class RentsService {
       .getRawMany()
   }
 
-  async cancel(id: number, userId: number): Promise<Rent> {
-    const row = await this.repo.findOneOrFail({ where: { id } });
-    return this.repo.save(this.repo.create({ ...row, rentState: RentState.canceled, updatedById: userId }));
+  async changeState(newState: RentState, rentId: number, userId: number): Promise<Rent> {
+    const currentRent = await this.repo.findOneOrFail({ where: { id: rentId } });
+    if (canChangeState(currentRent.rentState, newState) == false) {
+      throw new BadRequestException('لا يجوز تغيير حالة العقد');
+    }
+    await this.rentStateTransService.create({
+      createdById: userId,
+      rentId: currentRent.id,
+      state: newState,
+    });
+    const rent = await this.repo.save(this.repo.create({ ...currentRent, rentState: newState, updatedById: userId }));
+    return rent;
   }
 
   async update(id: number, dto: UpdateRentDto, userId: number): Promise<Rent> {

@@ -2,15 +2,11 @@ import { Customer } from '@/accounts/entities/customer.entity';
 import { User } from '@/accounts/entities/user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, OneToMany } from 'typeorm';
 import { Asset } from './asset.entity';
+import { Broker } from './broker.entity';
 import { Extension } from './extension.entity';
 import { Payment } from './payment.entity';
-
-export enum RentState {
-    draft = 'draft',
-    canceled = 'canceled',
-    checkedIn = 'checkedIn',
-    checkedOut = 'checkedOut',
-}
+import { RentState } from './rent-state';
+import { RentStateTrans } from './rent-state.entity';
 
 @Entity()
 export class Rent {
@@ -23,11 +19,17 @@ export class Rent {
     @ManyToOne(() => Asset)
     asset: Asset;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     customerId: number;
 
     @ManyToOne(() => Customer, { nullable: true })
     customer?: Customer;
+
+    @Column({ nullable: true })
+    brokerId: number;
+
+    @ManyToOne(() => Broker, { nullable: true })
+    broker?: Broker;
 
     @Column()
     dateFrom: Date;
@@ -44,8 +46,14 @@ export class Rent {
     @Column('double')
     price: number;
 
+    @Column('double')
+    brokerCommission: number;
+
     @Column({ type: 'varchar', default: RentState.draft })
     rentState: RentState;
+
+    @OneToMany(() => RentStateTrans, (trans) => trans.rent)
+    transitions: RentStateTrans[];
 
     @CreateDateColumn()
     createdAt: Date;

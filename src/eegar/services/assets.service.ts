@@ -2,8 +2,8 @@ import { PaginatedDataQueryDto, SortingDirection } from '@/shared/dto/paginated-
 import { PaginatedResultDto } from '@/shared/dto/paginated-result.dto';
 import { PaginatedDataService } from '@/shared/services/paginated-data.service';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, In, QueryBuilder, Repository } from 'typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, EntityManager, In, QueryBuilder, Repository } from 'typeorm';
 import { CreateAssetDto } from '../dto/create-asset.dto';
 import { UpdateAssetDto } from '../dto/update-asset.dto';
 import { Asset } from '../entities/asset.entity';
@@ -11,11 +11,13 @@ import * as path from 'path';
 import { nanoid } from 'nanoid/async';
 import { writeFile, rm } from "fs/promises";
 import { RentsService } from './rents.service';
+import { Rent } from '../entities/rent.entity';
 
 @Injectable()
 export class AssetsService {
   constructor(
     @InjectRepository(Asset) private repo: Repository<Asset>,
+    @InjectEntityManager() private entityManger: EntityManager,
     private paginatedDataService: PaginatedDataService,
     private rentsService: RentsService,
   ) { }
@@ -53,6 +55,37 @@ export class AssetsService {
       asset.lastRent = rents.find(r => r.assetId == asset.id);
     }
     return assets;
+  }
+
+  async findVacant(): Promise<Asset[]> {
+    /**
+     * SELECT * FROM  (SELECT *, (
+      SELECT rent.rentState
+      FROM rent
+      WHERE rent.assetId = asset.id
+      ORDER BY rent.createdAt
+      LIMIT 1) lastRentState
+      FROM asset) AS res
+      WHERE res.lastRentState <> "checkedIn" OR res.lastRentState IS null
+     */
+    return this.entityManger
+      .createQueryBuilder()
+      .select("*")
+      .from((qb) => {
+        return qb
+          .select('asset.*')
+          .addSelect((qb) => {
+            return qb
+              .select('rent.rentState')
+              .from(Rent, 'rent')
+              .where('rent.assetId = asset.id')
+              .orderBy('rent.createdAt', 'DESC')
+              .limit(1);
+          }, 'lastRentState')
+          .from(Asset, 'asset');
+      }, 'res')
+      .where('res.lastRentState IN("checkedOut", "canceled") OR res.lastRentState IS null')
+      .getRawMany() as any;
   }
 
   findOne(id: number): Promise<Asset> {

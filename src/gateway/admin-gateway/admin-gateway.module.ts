@@ -11,6 +11,7 @@ import { AssetsController } from './controllers/assets.controller';
 import { CustomersController } from './controllers/customers.controller';
 import { RentsController } from './controllers/rents.controller';
 import { ExtensionsController } from './controllers/extensions.controller';
+import { BrokersController } from './controllers/brokers.controller';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ExtensionsController } from './controllers/extensions.controller';
   ],
   controllers: [
     AuthController,
+    BrokersController,
     UsersController,
     AssetsController,
     CustomersController,

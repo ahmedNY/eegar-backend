@@ -11,6 +11,7 @@ import { RentsController } from '../admin-gateway/controllers/rents.controller';
 import { PaymentsController } from '../admin-gateway/controllers/payments.controller';
 import { CustomersController } from '../admin-gateway/controllers/customers.controller';
 import { ExtensionsController } from '../admin-gateway/controllers/extensions.controller';
+import { BrokersController } from '../admin-gateway/controllers/brokers.controller';
 
 
 @Module({
@@ -22,6 +23,7 @@ import { ExtensionsController } from '../admin-gateway/controllers/extensions.co
     ],
     controllers: [
         AssetsController,
+        BrokersController,
         AuthController,
         ExtensionsController,
         ConfigController,
