@@ -1,4 +1,6 @@
+import { EVENT_RENT_CREATED, EVENT_RENT_STATE_CHANGED } from '@/events';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, EntityManager, In, Repository } from 'typeorm';
 import { CreateRentDto } from '../dto/create-rent.dto';
@@ -12,6 +14,7 @@ export class RentsService {
   constructor(
     @InjectRepository(Rent) private repo: Repository<Rent>,
     @InjectEntityManager() private entityManager: EntityManager,
+    private eventEmitter: EventEmitter2,
     private rentStateTransService: RentStateTransService,
   ) { }
 
@@ -22,6 +25,7 @@ export class RentsService {
       rentId: rent.id,
       state: rent.rentState,
     });
+    this.eventEmitter.emit(EVENT_RENT_CREATED, rent);
     return rent;
   }
 
@@ -40,8 +44,9 @@ export class RentsService {
   }
 
   findByIds(ids: number[]): Promise<Rent[]> {
-    return this.repo.findBy({
-      id: In(ids)
+    return this.repo.find({
+      where: { id: In(ids) },
+      relations:  {extensions: true}
     })
   }
 
@@ -78,7 +83,7 @@ export class RentsService {
   }
 
   async changeState(newState: RentState, rentId: number, userId: number): Promise<Rent> {
-    const currentRent = await this.repo.findOneOrFail({ where: { id: rentId } });
+    const currentRent = await this.repo.findOneOrFail({ where: { id: rentId }, relations: {asset: true} });
     if (canChangeState(currentRent.rentState, newState) == false) {
       throw new BadRequestException('لا يجوز تغيير حالة العقد');
     }
@@ -88,6 +93,7 @@ export class RentsService {
       state: newState,
     });
     const rent = await this.repo.save(this.repo.create({ ...currentRent, rentState: newState, updatedById: userId }));
+    this.eventEmitter.emit(EVENT_RENT_STATE_CHANGED, rent);
     return rent;
   }
 

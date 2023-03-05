@@ -8,7 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { resolve } from 'path';
 import { unlink, writeFile } from 'fs/promises';
-import { Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UsersCountDto } from '../dto/user-count.dto';
@@ -17,6 +17,7 @@ import { nanoid } from 'nanoid';
 
 @Injectable()
 export class UsersService {
+
 
   constructor(
     @InjectRepository(User) private repo: Repository<User>,
@@ -109,6 +110,16 @@ export class UsersService {
       cache: true,
     });
     return !!user;
+  }
+
+  async getAdminsFBTokens(/* ids: number[] */): Promise<string[]> {
+    return (await this.repo.find({
+      where: {
+        // id: Not(In([ids])),
+        isAdmin: true,
+      },
+      select: { firebaseToken: true }
+    },)).map(e => e.firebaseToken);
   }
 
 }

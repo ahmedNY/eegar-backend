@@ -1,5 +1,5 @@
 import{ ApiPropertyInt } from "@/shared/decorators/api-property-int.decorator";
-import { IsNumberString, MaxLength, MinLength } from "class-validator";
+import { IsNumberString, IsString, MaxLength, MinLength } from "class-validator";
 
 export class VerifyOtpDto {
     @IsNumberString()
@@ -9,4 +9,7 @@ export class VerifyOtpDto {
 
     @IsNumberString()
     otpToken: string;
+
+    @IsString()
+    firebaseToken: string;
 }

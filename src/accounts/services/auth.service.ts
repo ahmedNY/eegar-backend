@@ -82,10 +82,23 @@ export class AuthService {
         }
         
         const user = await this.usersService.findOneByPhoneNumber(phoneNumber);
-
+        
         if (!user) {
             throw new NotFoundException('User not found!');
         }
+
+        // if (this.configService.get('NODE_ENV') != 'development') {
+
+        // }
+        if ((user.firebaseToken || user.firebaseToken?.trim().length > 0) && user.firebaseToken != dto.firebaseToken) {
+            throw new ForbiddenException('Please contact system admin to change your device');
+        }
+
+        if (user.firebaseToken == null || user.firebaseToken.length == 0) {
+            user.firebaseToken = dto.firebaseToken;
+            await this.usersService.update(user.id, user);
+        }
+        
 
         // delete otp
         await this.otpService.removeByPhoneNumber(phoneNumber);

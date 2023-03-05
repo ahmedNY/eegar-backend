@@ -12,6 +12,7 @@ import { CustomersController } from './controllers/customers.controller';
 import { RentsController } from './controllers/rents.controller';
 import { ExtensionsController } from './controllers/extensions.controller';
 import { BrokersController } from './controllers/brokers.controller';
+import { NotificationsController } from './controllers/notifications.controller';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { BrokersController } from './controllers/brokers.controller';
     BrokersController,
     UsersController,
     AssetsController,
+    NotificationsController,
     CustomersController,
     RentsController,
     ExtensionsController,

@@ -13,7 +13,7 @@ import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 @Controller('assets')
 @ApiTags('assets')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, IsAdminGuard)
+@UseGuards(JwtAuthGuard)
 export class AssetsController {
   constructor(private readonly service: AssetsService) { }
 

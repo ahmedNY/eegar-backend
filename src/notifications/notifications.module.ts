@@ -7,6 +7,7 @@ import { EmailService } from './services/email.service';
 import { SMSListeners } from './listeners/sms.listeners';
 import { ConfigModule } from '@/config/config.module';
 import { SharedModule } from '@/shared/shared.module';
+import { FirebaseListeners } from './listeners/firebase.listeners';
 
 const _exportedProviders = [
     EmailService,
@@ -24,6 +25,7 @@ const _exportedProviders = [
     providers: [
         ..._exportedProviders,
         SMSListeners,
+        FirebaseListeners,
     ],
     exports: [
         ..._exportedProviders,

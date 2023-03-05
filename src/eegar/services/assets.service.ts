@@ -44,8 +44,9 @@ export class AssetsService {
       .createQueryBuilder('a')
       .select('distinct a.*')
       .addSelect("(SELECT r1.id FROM rent r1 WHERE a.id = r1.assetId ORDER BY r1.updatedAt DESC LIMIT 1)", 'lastRentId')
-      .leftJoin('a.rents', 'r2')
-      .orderBy('r2.updatedAt', 'DESC')
+      .orderBy('a.district', 'DESC')
+      .addOrderBy('a.floor')
+      .addOrderBy('a.assetName')
       .getRawMany();
 
 
@@ -82,7 +83,11 @@ export class AssetsService {
               .orderBy('rent.createdAt', 'DESC')
               .limit(1);
           }, 'lastRentState')
-          .from(Asset, 'asset');
+          .from(Asset, 'asset')
+          .orderBy('asset.district', 'DESC')
+          .addOrderBy('asset.floor')
+          .addOrderBy('asset.assetName')
+          ;
       }, 'res')
       .where('res.lastRentState IN("checkedOut", "canceled") OR res.lastRentState IS null')
       .getRawMany() as any;
