@@ -1,7 +1,8 @@
 import { UsersService } from '@/accounts/services/users.service';
+import { Asset } from '@/eegar/entities/asset.entity';
 import { RentState } from '@/eegar/entities/rent-state';
 import { Rent } from '@/eegar/entities/rent.entity';
-import { EVENT_RENT_CREATED, EVENT_RENT_STATE_CHANGED } from '@/events';
+import { EVENT_IS_LEAVING_TODAY, EVENT_IS_LEAVING_TOMORROW, EVENT_IS_OVERDUE, EVENT_RENT_CREATED, EVENT_RENT_STATE_CHANGED } from '@/events';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { FirebaseService } from '../services/firebase.service';
@@ -11,7 +12,7 @@ export class FirebaseListeners {
     constructor(
         private firebaseService: FirebaseService,
         private usersService: UsersService,
-    ) {}
+    ) { }
 
     @OnEvent(EVENT_RENT_CREATED)
     async onRentCreated(rent: Rent) {
@@ -37,7 +38,7 @@ export class FirebaseListeners {
                 break;
             case RentState.checkedOut:
                 body = 'تم استلام مفاتيح الشقة';
-                break;    
+                break;
             default:
                 break;
         }
@@ -46,6 +47,39 @@ export class FirebaseListeners {
             body: body,
             registrationTokens: registrationTokens,
             data: rent,
+        });
+    }
+
+    @OnEvent(EVENT_IS_LEAVING_TODAY)
+    async onIsLeavingToday(asset: Asset) {
+        let registrationTokens = await this.usersService.getAllFBTokens();
+        this.firebaseService.sendBulkPushNotification({
+            title: asset.assetName,
+            body: "الزبون مغادر اليوم",
+            registrationTokens: registrationTokens,
+            data: asset,
+        });
+    }
+
+    @OnEvent(EVENT_IS_LEAVING_TOMORROW)
+    async onIsLeavingTomorrow(asset: Asset) {
+        let registrationTokens = await this.usersService.getAllFBTokens();
+        this.firebaseService.sendBulkPushNotification({
+            title: asset.assetName,
+            body: "الزبون مغادر غدا",
+            registrationTokens: registrationTokens,
+            data: asset,
+        });
+    }
+
+    @OnEvent(EVENT_IS_OVERDUE)
+    async onIsOverdue(asset: Asset) {
+        let registrationTokens = await this.usersService.getAllFBTokens();
+        this.firebaseService.sendBulkPushNotification({
+            title: asset.assetName,
+            body: "الزبون متعدي: تخطى ايام المكوث",
+            registrationTokens: registrationTokens,
+            data: asset,
         });
     }
 }

@@ -42,6 +42,11 @@ export class AssetsController {
     return this.service.findVacant();
   }
 
+  @Get('triggerCron')
+  triggerCron() {
+    return this.service.handleCron();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.service.findOne(+id);

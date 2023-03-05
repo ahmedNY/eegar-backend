@@ -12,6 +12,10 @@ import { nanoid } from 'nanoid/async';
 import { writeFile, rm } from "fs/promises";
 import { RentsService } from './rents.service';
 import { Rent } from '../entities/rent.entity';
+import { Cron } from '@nestjs/schedule';
+import { HomeAssetDto } from '../dto/home_asset.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EVENT_IS_LEAVING_TODAY, EVENT_IS_LEAVING_TOMORROW, EVENT_IS_OVERDUE } from '@/events';
 
 @Injectable()
 export class AssetsService {
@@ -20,6 +24,7 @@ export class AssetsService {
     @InjectEntityManager() private entityManger: EntityManager,
     private paginatedDataService: PaginatedDataService,
     private rentsService: RentsService,
+    private eventEmitter: EventEmitter2,
   ) { }
 
   create(userId: number, dto: CreateAssetDto): Promise<Asset> {
@@ -39,7 +44,7 @@ export class AssetsService {
     });
   }
 
-  async findAllForHomePage(): Promise<Asset[]> {
+  async findAllForHomePage(): Promise<HomeAssetDto[]> {
     const assets = await this.repo
       .createQueryBuilder('a')
       .select('distinct a.*')
@@ -143,5 +148,31 @@ export class AssetsService {
       .select('DISTINCT v.categoryId as categoryId')
       .getRawMany();
     return result.map(row => row.categoryId);
+  }
+
+  @Cron('00 12 * * * *')
+  async handleCron() {
+    const assets = await this.findAllForHomePage();
+    for (const asset of assets) {
+      if (asset.lastRent == null) {
+        continue;
+      }
+
+      if (asset.lastRent.isLeavingTomorrow) {
+        this.eventEmitter.emit(EVENT_IS_LEAVING_TOMORROW, asset);
+        return;
+      }
+      
+      if (asset.lastRent.isLeavingToday) {
+        this.eventEmitter.emit(EVENT_IS_LEAVING_TODAY, asset);
+        return;
+      }
+      
+      if (asset.lastRent.isOverdue) {
+        this.eventEmitter.emit(EVENT_IS_OVERDUE, asset);
+        return;
+      }
+
+    }
   }
 }

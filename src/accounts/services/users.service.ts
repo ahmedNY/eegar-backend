@@ -8,7 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { resolve } from 'path';
 import { unlink, writeFile } from 'fs/promises';
-import { In, Not, Repository } from 'typeorm';
+import { In, IsNull, Not, Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UsersCountDto } from '../dto/user-count.dto';
@@ -118,6 +118,13 @@ export class UsersService {
         // id: Not(In([ids])),
         isAdmin: true,
       },
+      select: { firebaseToken: true }
+    },)).map(e => e.firebaseToken);
+  }
+
+  async getAllFBTokens(): Promise<string[]> {
+    return (await this.repo.find({
+      where: {firebaseToken: Not(IsNull())},
       select: { firebaseToken: true }
     },)).map(e => e.firebaseToken);
   }

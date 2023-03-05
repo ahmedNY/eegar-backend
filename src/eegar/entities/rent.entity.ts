@@ -7,7 +7,9 @@ import { Extension } from './extension.entity';
 import { Payment } from './payment.entity';
 import { RentState } from './rent-state';
 import { RentStateTrans } from './rent-state.entity';
+import * as moment from 'moment-timezone';
 
+export const CHECKOUT_HOUR = 14; // 02:00 pm
 @Entity()
 export class Rent {
     @PrimaryGeneratedColumn()
@@ -72,4 +74,53 @@ export class Rent {
 
     @ManyToOne(() => User, { nullable: true })
     updatedBy?: User;
+
+
+    get checkoutDate(): Date {
+        let checkout = new Date(this.dateFrom.getTime());
+        checkout.setDate(checkout.getDate() + this.numberOfNights);
+        if (this.extensions?.length > 0) {
+            const extraDays = this.extensions
+                ?.map((e) => e.numberOfNights)
+                .reduce((value, element) => value + element);
+            checkout.setDate(checkout.getDate() + extraDays);
+        }
+        return checkout;
+    }
+
+    private get _getTodayCheckout(): Date {
+        const now = new Date();
+        now.setHours(CHECKOUT_HOUR, 0, 0);
+        return now;
+    }
+
+    get isCheckedIn(): boolean {
+        return this.rentState == RentState.checkedIn;
+    }
+
+    get isOverdue(): boolean {
+        if (this.isCheckedIn == false) return false;
+        const leaveDate = this._getTodayCheckout;
+        return moment(leaveDate).isAfter(moment(this.checkoutDate));
+    }
+
+    get isLeavingToday(): boolean {
+        if (this.isCheckedIn == false) return false;
+        const leaveDate = this._getTodayCheckout;
+        const checkoutDate = this.checkoutDate;
+        return leaveDate.getDate() == checkoutDate.getDate() &&
+            leaveDate.getMonth() == checkoutDate.getMonth() &&
+            leaveDate.getFullYear() == checkoutDate.getFullYear();
+    }
+
+    get isLeavingTomorrow(): boolean {
+        if (this.isCheckedIn == false) return false;
+        const leaveDate = this._getTodayCheckout;
+        leaveDate.setDate(leaveDate.getDate() + 1);
+        const checkoutDate = this.checkoutDate;
+        return leaveDate.getDate() == checkoutDate.getDate() &&
+            leaveDate.getMonth() == checkoutDate.getMonth() &&
+            leaveDate.getFullYear() == checkoutDate.getFullYear();
+    }
+
 }

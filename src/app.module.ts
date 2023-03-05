@@ -10,6 +10,8 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { SharedModule } from './shared/shared.module';
 import { SocketGatewayModule } from './socket-gateway/socket-gateway.module';
 import { EegarModule } from './eegar/eegar.module';
+import { ScheduleModule } from '@nestjs/schedule';
+
 
 export async function getTypeOrmModule() {
   await NestConfigModule.envVariablesLoaded;
@@ -36,6 +38,7 @@ export async function getTypeOrmModule() {
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     CacheModule.register<ClientOpts>({
       isGlobal: true,
       store: redisStore,
