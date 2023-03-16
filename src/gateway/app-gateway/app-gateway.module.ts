@@ -6,13 +6,7 @@ import { ConfigModule } from '@/config/config.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { ConfigController } from '../admin-gateway/controllers/config.controller';
 import { EegarModule } from '@/eegar/eegar.module';
-import { AssetsController } from '../admin-gateway/controllers/assets.controller';
-import { RentsController } from '../admin-gateway/controllers/rents.controller';
-import { PaymentsController } from '../admin-gateway/controllers/payments.controller';
-import { CustomersController } from '../admin-gateway/controllers/customers.controller';
-import { ExtensionsController } from '../admin-gateway/controllers/extensions.controller';
-import { BrokersController } from '../admin-gateway/controllers/brokers.controller';
-
+import { BillsController } from '../admin-gateway/controllers/bills.controller';
 
 @Module({
     imports: [
@@ -22,14 +16,9 @@ import { BrokersController } from '../admin-gateway/controllers/brokers.controll
         NotificationsModule,
     ],
     controllers: [
-        AssetsController,
-        BrokersController,
         AuthController,
-        ExtensionsController,
+        BillsController,
         ConfigController,
-        CustomersController,
-        PaymentsController,
-        RentsController,
         UserMeController,
     ],
 })

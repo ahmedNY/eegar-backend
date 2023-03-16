@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.3.16",
-    "@googlemaps/polyline-codec": "^1.0.28",
     "@nestjs/axios": "^0.1.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
@@ -42,8 +41,6 @@
     "@nestjs/swagger": "^6.1.1",
     "@nestjs/typeorm": "^9.0.1",
     "@nestjs/websockets": "^9.1.6",
-    "@nestjsx/crud": "^5.0.0-alpha.3",
-    "@nestjsx/crud-typeorm": "^5.0.0-alpha.3",
     "@types/cache-manager": "^4.0.2",
     "axios-cache-adapter": "^2.7.3",
     "bcryptjs": "^2.4.3",

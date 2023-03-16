@@ -19,5 +19,5 @@ export class CreateUserDto extends PartialType(User) {
     
     @IsBoolean()
     @IsOptional()
-    isActive: boolean;
+    isActive?: boolean;
 }

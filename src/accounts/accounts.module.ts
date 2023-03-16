@@ -11,8 +11,6 @@ import { ConfigModule as NestConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './services/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { SharedModule } from 'src/shared/shared.module';
-import { CustomersService } from './services/customers.service';
-import { Customer } from './entities/customer.entity';
 
 
 export async function getJwtModule() {
@@ -24,7 +22,6 @@ export async function getJwtModule() {
 
 const _exportedProviders = [
   AuthService,
-  CustomersService,
   OtpService,
   UsersService,
 ];
@@ -37,7 +34,6 @@ const _exportedGuards = [
   imports: [
     getJwtModule(),
     TypeOrmModule.forFeature([
-      Customer,
       Otp,
       User,
     ]),

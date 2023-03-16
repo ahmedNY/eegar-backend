@@ -32,7 +32,7 @@ export class User {
     @CreateDateColumn()
     createdAt: Date;
 
-    @Column({ nullable: true })
+    @Column({ default: 'profile.jpg' })
     fileName?: string;
 
     @UpdateDateColumn()

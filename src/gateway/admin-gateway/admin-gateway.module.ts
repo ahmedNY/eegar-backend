@@ -7,11 +7,7 @@ import { SharedModule } from '@/shared/shared.module';
 import { HttpModule } from '@nestjs/axios';
 import { AuthController } from './controllers/auth.controller';
 import { EegarModule } from '@/eegar/eegar.module';
-import { AssetsController } from './controllers/assets.controller';
-import { CustomersController } from './controllers/customers.controller';
-import { RentsController } from './controllers/rents.controller';
-import { ExtensionsController } from './controllers/extensions.controller';
-import { BrokersController } from './controllers/brokers.controller';
+import { BillsController } from './controllers/bills.controller';
 import { NotificationsController } from './controllers/notifications.controller';
 
 @Module({
@@ -25,13 +21,9 @@ import { NotificationsController } from './controllers/notifications.controller'
   ],
   controllers: [
     AuthController,
-    BrokersController,
+    BillsController,
     UsersController,
-    AssetsController,
     NotificationsController,
-    CustomersController,
-    RentsController,
-    ExtensionsController,
   ]
 })
 export class AdminGatewayModule { }

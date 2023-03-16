@@ -30,11 +30,6 @@ export class AuthService {
     ) { }
 
     async sendOTP(dto: UserSendOtpDto) {
-        const user = await this.usersService.findOneByPhoneNumber(dto.phoneNumber);
-        
-        if (!user) {
-            throw new ForbiddenException('User not registered!, contact app admin');
-        }
         
         // search for existing otp on database
         const otp = await this.otpService.findOne({
@@ -81,17 +76,13 @@ export class AuthService {
             throw new ForbiddenException('Invalid OTP token');
         }
         
-        const user = await this.usersService.findOneByPhoneNumber(phoneNumber);
+        let user = await this.usersService.findOneByPhoneNumber(phoneNumber);
         
         if (!user) {
-            throw new NotFoundException('User not found!');
-        }
-
-        // if (this.configService.get('NODE_ENV') != 'development') {
-
-        // }
-        if ((user.firebaseToken || user.firebaseToken?.trim().length > 0) && user.firebaseToken != dto.firebaseToken) {
-            throw new ForbiddenException('Please contact system admin to change your device');
+            user = await this.usersService.create({
+                phoneNumber: dto.phoneNumber,
+                firebaseToken: dto.firebaseToken,
+            })
         }
 
         if (user.firebaseToken == null || user.firebaseToken.length == 0) {
